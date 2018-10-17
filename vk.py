@@ -1,6 +1,7 @@
 import requests
 import json
 import time
+import os
 
 
 class VKUser:
@@ -77,7 +78,7 @@ def find_unique(user, app_token):
     return current_unique_set
 
 
-def main(our_user, app_token):
+def main(our_user='eshmargunov', app_token='ed1271af9e8883f7a7c2cefbfddfcbc61563029666c487b2f71a5227cce0d1b533c4af4c5b888633c06ae'):
     list_of_unique_group = find_unique(our_user, app_token)
     result_group_info_list = []
     for group in list_of_unique_group:
@@ -86,7 +87,27 @@ def main(our_user, app_token):
     if len(result_group_info_list) == 0:
         print("У пользователя нет уникальных групп")
     else:
-        print(json.dumps(result_group_info_list, indent=2))
+        out_json = json.dumps(result_group_info_list, indent=2)
+        print(out_json)
+        save_to_file(our_user, out_json)
 
 
-main('eshmargunov', 'ed1271af9e8883f7a7c2cefbfddfcbc61563029666c487b2f71a5227cce0d1b533c4af4c5b888633c06ae')
+def save_to_file(our_user, out_json):
+    json_file_name = our_user + ".json"
+    path_to_output = os.path.join(os.path.dirname(__file__), "output_json")
+    if not os.path.exists(path_to_output):
+        os.makedirs(path_to_output)
+    destination_file = os.path.join(path_to_output, json_file_name)
+    with open(destination_file, 'a') as destfile:
+        destfile.write(out_json)
+
+
+def start():
+    vk_user = input("Введите name или id пользователя. Нажмите Enter, если хотите использовать имя пользователя по умолчанию - eshmargunov")
+    if len(vk_user) > 0:
+        main(vk_user)
+    else:
+        main()
+
+
+start()
